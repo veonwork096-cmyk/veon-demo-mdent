@@ -1,0 +1,65 @@
+---
+import { Picture } from "astro:assets";
+import Section from "./Section.astro";
+import team from "../assets/team.jpg";
+import { telegram } from "../data/site";
+---
+<Section id="hero" rec="R-001,R-004,S-SEO-R03" class="hero field">
+  <div class="hero__grid">
+    <div class="hero__text">
+      <h1 class="hero__title"><span class="hero__line" style="--i:0">Сімейна стоматологія MDENT</span> <span class="hero__line" style="--i:1">у Дніпрі, Кам'янському та Ужгороді</span></h1>
+      <p class="hero__sub lead muted hero__rise" style="--i:2">П'ять клінік і дитяча ортодонтія Orto&nbsp;Kids. Олександрія&nbsp;— незабаром.</p>
+      <div class="hero__actions hero__rise" style="--i:3">
+        <a class="btn hero__cta" href="#clinics">Записатися</a>
+        <a class="text-link hero__tg" href={telegram} target="_blank" rel="noopener">Написати в Telegram</a>
+      </div>
+    </div>
+    <figure class="hero__photo">
+      <Picture
+        src={team}
+        formats={["avif", "webp"]}
+        widths={[480, 760, 1000, 1369]}
+        sizes="(min-width: 64rem) 42vw, 100vw"
+        alt="Троє лікарів MDENT зі спини у фіолетових футболках з логотипом клініки біля ресепшену"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </figure>
+  </div>
+</Section>
+
+<style>
+  :global(#hero) { padding-block: var(--gap-2xl); overflow: clip; }
+  .hero__grid { display: grid; grid-template-columns: minmax(var(--gutter), 1fr) minmax(0, calc(var(--container) * 0.6)) var(--gap-2xl) minmax(0, calc(var(--container) * 0.4 - var(--gap-2xl))) minmax(var(--gutter), 1fr); align-items: center; }
+  .hero__text { grid-column: 2; }
+  .hero__photo { grid-column: 4 / -1; }
+  .hero__text { display: grid; gap: var(--gap-lg); }
+  .hero__title { font-size: var(--text-display); line-height: 1.05; letter-spacing: -0.02em; color: var(--color-on-field); max-width: 22ch; }
+  .hero__line { display: block; }
+  .hero__sub { max-width: 40ch; }
+  .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-sm) var(--gap-lg); margin-top: var(--gap-xs); }
+  .hero__cta { min-height: 52px; padding: 0 var(--gap-xl); font-size: var(--text-lead); }
+  .hero__photo { margin: 0; }
+  .hero__photo :global(img) { width: 100%; height: clamp(440px, 40vw, 600px); object-fit: cover; object-position: 50% 60%; border-radius: var(--radius) 0 0 var(--radius); }
+
+  /* Entrance: lines settle up 8px; text is painted from the first frame (transform only) */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__line, .hero__rise { animation: hero-settle 500ms var(--ease-out) both; animation-delay: calc(var(--i, 0) * 60ms); }
+  }
+  @keyframes hero-settle { from { transform: translateY(8px); } to { transform: none; } }
+
+  @media (max-width: 63.99rem) {
+    :global(#hero) { padding-block: var(--gap-xl) 0; }
+    .hero__grid { grid-template-columns: var(--gutter) minmax(0, 1fr) var(--gutter); row-gap: var(--gap-xl); }
+    .hero__text { grid-column: 2; }
+    .hero__photo { grid-column: 1 / -1; }
+    .hero__title { max-width: 16ch; }
+    .hero__photo :global(img) { height: auto; aspect-ratio: 4 / 3; border-radius: 0; object-position: 50% 55%; }
+    .hero__line, .hero__rise { animation-duration: 400ms; }
+  }
+  @media (max-width: 47.99rem) {
+    .hero__actions { flex-direction: column; align-items: stretch; }
+    .hero__cta { min-height: 56px; width: 100%; }
+    .hero__tg { justify-content: center; min-height: 48px; }
+  }
+</style>

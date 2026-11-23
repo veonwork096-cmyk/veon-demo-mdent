@@ -1,0 +1,64 @@
+---
+import Section from "./Section.astro";
+import FutureLink from "./FutureLink.astro";
+import { services } from "../data/site";
+const note = "Розділ у розробці";
+---
+<Section id="services" rec="R-005" class="services">
+  <div class="container services__grid">
+    <div class="services__head">
+      <h2>Послуги: понад 40 напрямків</h2>
+      <p class="muted">Комплексна стоматологія для дорослих і дітей: від профілактики та лікування до імплантації й ортодонтії.</p>
+      <FutureLink note={note} class="services__all">Усі послуги</FutureLink>
+    </div>
+    <ul class="rows">
+      {services.map((s) => (
+        <li class="row">
+          <h3 class="row__verb"><FutureLink note={note} class="row__link">{s.verb}</FutureLink></h3>
+          <p class="row__line muted">
+            {s.line}
+            {s.kids && <><br /><a class="text-link row__kids" href="#orto-kids">Дітям: клініка Orto Kids</a></>}
+          </p>
+          <span class="row__arrow" aria-hidden="true">→</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Section>
+
+<style>
+  :global(#services) { padding-block: var(--section-gap); }
+  .services__grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--gap-columns); align-items: start; }
+  .services__head { display: grid; gap: var(--gap-md); justify-items: start; position: sticky; top: calc(var(--header-h) + var(--gap-xl)); }
+  .services__head p { max-width: 32ch; }
+  .services__head :global(.services__all) { min-height: 44px; font-weight: 600; }
+
+  .rows { border-top: 1px solid var(--color-rule); }
+  .row { position: relative; display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr) auto; gap: var(--gap-lg); align-items: center; padding: var(--gap-lg) var(--gap-md); border-bottom: 1px solid var(--color-rule); transition: background-color var(--dur-short) var(--ease-out); }
+  .row:hover { background: var(--color-paper-2); }
+  .row__verb { font-size: var(--text-title); }
+  .row__verb :global(.row__link) { text-decoration: none; color: var(--color-text); }
+  .row__verb :global(.row__link:focus-visible) { outline-offset: 4px; }
+  .row__line { font-size: var(--text-md); }
+  .row__kids { min-height: 44px; color: var(--color-field); }
+  .row__arrow { font: 400 var(--text-title)/1 var(--font-body); color: var(--color-field); transition: transform var(--dur-short) var(--ease-out); }
+  .row:hover .row__arrow { transform: translateX(4px); }
+
+  @media (hover: none) {
+    .row:active { background: var(--color-paper-2); transition-duration: var(--dur-micro); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .row:hover .row__arrow { transform: none; }
+  }
+
+  @media (max-width: 63.99rem) {
+    .services__grid { grid-template-columns: minmax(0, 1fr); gap: var(--gap-xl); }
+    .services__head { position: static; }
+  }
+  @media (max-width: 47.99rem) {
+    .row { grid-template-columns: minmax(0, 1fr) auto; gap: var(--gap-2xs) var(--gap-md); padding: var(--gap-md) 0; }
+    .row__verb { font-size: var(--text-lead); }
+    .row__line { grid-column: 1; grid-row: 2; }
+    .row__arrow { grid-column: 2; grid-row: 1 / span 2; }
+  }
+</style>

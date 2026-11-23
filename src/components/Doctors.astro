@@ -1,0 +1,112 @@
+---
+import { Image } from "astro:assets";
+import Section from "./Section.astro";
+import FutureLink from "./FutureLink.astro";
+import { doctors } from "../data/site";
+
+const filters = [
+  { key: "all", label: "Усі" },
+  { key: "dnipro", label: "Дніпро" },
+  { key: "kamianske", label: "Кам'янське" },
+  { key: "uzhhorod", label: "Ужгород" },
+];
+---
+<Section id="doctors" rec="R-006,S-SEO-R09" class="doctors field">
+  <div class="container">
+    <div class="doctors__head">
+      <div class="doctors__intro">
+        <h2>Лікарі у вашому місті</h2>
+        <p class="muted">Сучасне обладнання і команда, що лікує дорослих і дітей.</p>
+      </div>
+      <div class="filter" role="group" aria-label="Показати лікарів за містом" data-filter>
+        {filters.map((f, i) => (
+          <button class="filter__btn" type="button" data-city={f.key} aria-pressed={i === 0 ? "true" : "false"}>{f.label}</button>
+        ))}
+      </div>
+    </div>
+    <p class="visually-hidden" aria-live="polite" data-filter-status></p>
+
+    <ul class="docs" data-docs>
+      {doctors.map((d) => (
+        <li class="doc" data-cities={d.cities.join(" ")}>
+          <Image class="doc__photo" src={d.photo} alt={`${d.name}, ${d.role.toLowerCase()}`} widths={[300, 450, 600]} sizes="(min-width: 64rem) 380px, (min-width: 48rem) 45vw, 50vw" loading="lazy" decoding="async" />
+          <h3 class="doc__name">{d.name}</h3>
+          <p class="doc__role">{d.role}</p>
+          <dl class="doc__facts">
+            <div><dt>Стаж</dt><dd>{d.years} років</dd></div>
+            <div><dt>Приймає</dt><dd>{d.places}</dd></div>
+          </dl>
+        </li>
+      ))}
+    </ul>
+    <p class="doctors__more"><FutureLink note="Розділ у розробці">Усі лікарі MDENT</FutureLink></p>
+  </div>
+</Section>
+
+<script>
+  const wrap = document.querySelector<HTMLElement>("[data-filter]");
+  const items = document.querySelectorAll<HTMLElement>("[data-docs] > li");
+  const status = document.querySelector<HTMLElement>("[data-filter-status]");
+  if (wrap) {
+    const buttons = wrap.querySelectorAll<HTMLButtonElement>("button");
+    buttons.forEach((b) => b.addEventListener("click", () => {
+      const city = b.dataset.city ?? "all";
+      buttons.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+      let shown = 0;
+      items.forEach((li) => {
+        const match = city === "all" || (li.dataset.cities ?? "").split(" ").includes(city);
+        li.hidden = !match;
+        li.classList.remove("is-entering");
+        if (match) {
+          li.style.setProperty("--i", String(shown));
+          void li.offsetWidth;
+          li.classList.add("is-entering");
+          shown += 1;
+        }
+      });
+      if (status) status.textContent = `Показано лікарів: ${shown}`;
+    }));
+  }
+</script>
+
+<style>
+  :global(#doctors) { padding-block: var(--section-gap); }
+  .doctors__head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--gap-lg) var(--gap-xl); margin-bottom: var(--gap-2xl); }
+  .doctors__intro { display: grid; gap: var(--gap-md); }
+
+  .filter { display: flex; flex-wrap: wrap; gap: var(--gap-xs); }
+  :global(html:not(.js)) .filter { display: none; }
+  .filter__btn { min-height: 44px; padding: 0 var(--gap-md); border: 1.5px solid var(--color-on-field-2); border-radius: var(--radius-btn); background: transparent; color: var(--color-on-field); font: 600 var(--text-md)/1 var(--font-body); cursor: pointer; transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
+  .filter__btn:hover { background: var(--color-field-hover); }
+  .filter__btn:active { transform: translateY(1px); }
+  .filter__btn:focus-visible { outline: 3px solid var(--color-on-field); outline-offset: 2px; }
+  .filter__btn[aria-pressed="true"] { background: var(--color-on-field); border-color: var(--color-on-field); color: var(--color-field); }
+
+  .docs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap-2xl) var(--gap-columns); }
+  .doc { display: grid; gap: var(--gap-xs); align-content: start; }
+  .doc[hidden] { display: none; }
+  .doc__photo { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; border-radius: var(--radius); margin-bottom: var(--gap-sm); }
+  .doc__name { font-size: var(--text-lead); line-height: 1.2; color: var(--color-on-field); }
+  .doc__role { color: var(--color-on-field-2); }
+  .doc__facts { display: grid; gap: var(--gap-2xs); margin: 0; font-size: var(--text-sm); color: var(--color-on-field-2); }
+  .doc__facts div { display: flex; gap: var(--gap-xs); }
+  .doc__facts dt { font-weight: 600; color: var(--color-on-field); }
+  .doc__facts dd { margin: 0; }
+  .doctors__more { margin-top: var(--gap-2xl); }
+  .doctors__more :global(.future-link) { min-height: 44px; font-weight: 600; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .doc.is-entering { animation: doc-in var(--dur-short) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 40ms); }
+  }
+  @keyframes doc-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  @media (max-width: 63.99rem) {
+    .docs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-xl) var(--gap-md); }
+  }
+  @media (max-width: 47.99rem) {
+    .doctors__head { margin-bottom: var(--gap-xl); }
+    .doc__name { font-size: var(--text-md); }
+    .doc__role { font-size: var(--text-sm); }
+    .doc__facts div { flex-direction: column; gap: 0; }
+  }
+</style>

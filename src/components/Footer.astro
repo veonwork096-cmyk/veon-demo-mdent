@@ -1,0 +1,40 @@
+---
+import FutureLink from "./FutureLink.astro";
+import logo from "../assets/logo-mdent.svg";
+const note = "Розділ у розробці";
+const future = ["Orto Kids", "Усі послуги", "Лікарі", "Ціни", "Акції", "Блог", "RU"];
+---
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <a class="site-footer__logo" href="#top" aria-label="MDENT, на початок сторінки">
+      <img src={logo.src} width="107" height="96" alt="Логотип MDENT" loading="lazy" />
+    </a>
+    <nav aria-label="Розділи сайту">
+      <ul class="site-footer__links">
+        {future.map((f) => <li><FutureLink note={note}>{f}</FutureLink></li>)}
+      </ul>
+    </nav>
+    <div class="site-footer__legal">
+      <p>© 2026 Мережа стоматологічних клінік MDENT</p>
+      <FutureLink note={note}>Політика конфіденційності</FutureLink>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { border-top: 1px solid var(--color-rule); padding-block: var(--gap-2xl); font-size: var(--text-sm); color: var(--color-muted); }
+  .site-footer__grid { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--gap-xl); align-items: center; }
+  .site-footer__logo { display: inline-flex; border-radius: var(--radius); }
+  .site-footer__logo img { height: 96px; width: auto; }
+  .site-footer__links { display: flex; flex-wrap: wrap; gap: 0 var(--gap-lg); }
+  .site-footer__links :global(.future-link), .site-footer__legal :global(.future-link) { min-height: 44px; color: var(--color-text); }
+  .site-footer__legal { display: grid; justify-items: end; gap: var(--gap-2xs); }
+  @media (max-width: 63.99rem) {
+    .site-footer__grid { grid-template-columns: minmax(0, 1fr); gap: var(--gap-lg); }
+    .site-footer__legal { justify-items: start; }
+  }
+  @media (max-width: 47.99rem) {
+    .site-footer__links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .site-footer__links li:nth-child(even) :global(.future-link__note) { left: auto; right: 0; }
+  }
+</style>

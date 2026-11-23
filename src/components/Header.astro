@@ -1,0 +1,104 @@
+---
+import FutureLink from "./FutureLink.astro";
+import logo from "../assets/logo-mdent.svg";
+const note = "Розділ у розробці";
+const anchors = [
+  { href: "#clinics", label: "Клініки" },
+  { href: "#services", label: "Послуги" },
+  { href: "#visit", label: "Оплата" },
+  { href: "#doctors", label: "Лікарі" },
+  { href: "#contacts", label: "Контакти" },
+];
+---
+<header class="site-header" data-header data-rec="R-003,MA-R008">
+  <div class="container site-header__bar">
+    <a class="site-header__logo" href="#top" aria-label="MDENT, на початок сторінки">
+      <img src={logo.src} width="58" height="52" alt="Логотип MDENT" />
+    </a>
+    <nav class="site-nav" id="site-nav" aria-label="Головне меню" data-nav>
+      <ul class="site-nav__list">
+        {anchors.map((a) => <li><a class="site-nav__link" href={a.href}>{a.label}</a></li>)}
+        <li class="site-nav__future site-nav__future--first"><FutureLink note={note} class="site-nav__link">Orto Kids</FutureLink></li>
+        <li class="site-nav__future"><FutureLink note={note} class="site-nav__link">Акції</FutureLink></li>
+        <li class="site-nav__future site-nav__mobile-only"><FutureLink note={note} class="site-nav__link">Ціни</FutureLink></li>
+      </ul>
+    </nav>
+    <div class="site-header__actions">
+      <a class="btn btn--outline site-header__cta" href="#clinics" data-rec="R-001">Записатися</a>
+      <button class="site-header__menu" type="button" aria-expanded="false" aria-controls="site-nav" data-menu>
+        <span class="site-header__menu-icon" aria-hidden="true"><span></span><span></span></span>
+        <span class="site-header__menu-label">Меню</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>("[data-header]");
+  const btn = document.querySelector<HTMLButtonElement>("[data-menu]");
+  const nav = document.querySelector<HTMLElement>("[data-nav]");
+  if (header && btn && nav) {
+    const setOpen = (open: boolean) => {
+      btn.setAttribute("aria-expanded", String(open));
+      header.classList.toggle("is-open", open);
+    };
+    btn.addEventListener("click", () => setOpen(btn.getAttribute("aria-expanded") !== "true"));
+    nav.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && header.classList.contains("is-open")) { setOpen(false); btn.focus(); }
+    });
+    const onScroll = () => header.classList.toggle("is-scrolled", window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+</script>
+
+<style>
+  .site-header { position: sticky; top: 0; z-index: var(--z-nav); background: var(--color-bg); border-bottom: 1px solid transparent; transition: border-color var(--dur-short) var(--ease-out); }
+  .site-header.is-scrolled { border-bottom-color: var(--color-rule); }
+  .site-header__bar { display: flex; align-items: center; gap: var(--gap-lg); height: var(--header-h); }
+  .site-header__logo { display: inline-flex; flex-shrink: 0; border-radius: var(--radius); }
+  .site-header__logo img { width: auto; height: 52px; }
+  .site-header__actions { display: flex; align-items: center; gap: var(--gap-sm); margin-left: auto; }
+
+  .site-nav__list { display: flex; align-items: center; gap: var(--gap-2xs); }
+  .site-nav__link { display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--gap-sm); border-radius: var(--radius); color: var(--color-text); font-size: var(--text-md); text-decoration: none; transition: background-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
+  a.site-nav__link:hover { background: var(--color-paper-2); color: var(--color-field); }
+  .site-nav__future :global(.future-link) { min-height: 44px; padding: 0 var(--gap-sm); border-radius: var(--radius); color: var(--color-muted); font-size: var(--text-md); text-underline-offset: 0.35em; }
+  .site-nav__future--first { margin-left: var(--gap-sm); padding-left: var(--gap-sm); border-left: 1px solid var(--color-rule); }
+  .site-nav__mobile-only { display: none; }
+
+  .site-header__menu { display: none; align-items: center; gap: var(--gap-xs); min-height: 44px; min-width: 44px; padding: 0 var(--gap-sm); border: 0; border-radius: var(--radius); background: transparent; color: var(--color-text); font: 600 var(--text-md)/1 var(--font-body); cursor: pointer; transition: background-color var(--dur-short) var(--ease-out); }
+  .site-header__menu:hover { background: var(--color-paper-2); }
+  .site-header__menu:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
+  .site-header__menu-icon { display: grid; gap: var(--gap-2xs); width: 20px; }
+  .site-header__menu-icon span { display: block; height: 2px; background: currentColor; transition: transform var(--dur-short) var(--ease-out); }
+  .is-open .site-header__menu-icon span:first-child { transform: translateY(3px) rotate(45deg); }
+  .is-open .site-header__menu-icon span:last-child { transform: translateY(-3px) rotate(-45deg); }
+
+  @media (min-width: 64rem) and (max-width: 79.99rem) {
+    .site-nav__link, .site-nav__future :global(.future-link) { padding: 0 var(--gap-xs); }
+    .site-header__bar { gap: var(--gap-md); }
+  }
+
+  @media (max-width: 63.99rem) {
+    .site-header__logo img { height: 44px; }
+    .site-header__cta { min-height: 44px; padding: 0 var(--gap-md); }
+    .site-header__menu { display: inline-flex; }
+    .site-nav { position: absolute; inset: var(--header-h) 0 auto 0; background: var(--color-bg); border-bottom: 1px solid var(--color-rule); padding: var(--gap-xs) var(--gutter) var(--gap-lg); }
+    .site-nav__list { flex-direction: column; align-items: stretch; gap: 0; }
+    .site-nav__link, .site-nav__future :global(.future-link) { width: 100%; min-height: 48px; font-size: var(--text-lead); padding: 0; border-radius: 0; border-bottom: 1px solid var(--color-rule); }
+    .site-nav__future--first { margin: 0; padding: 0; border: 0; }
+    .site-nav__mobile-only { display: block; }
+    .site-nav__future :global(.future-link__note) { left: auto; right: 0; transform: none; }
+    :global(.js) .site-nav { display: none; }
+    :global(.js) .is-open .site-nav { display: block; }
+    :global(html:not(.js)) .site-header__menu { display: none; }
+    :global(html:not(.js)) .site-header { position: static; }
+    :global(html:not(.js)) .site-nav { position: static; }
+    :global(html:not(.js)) .site-header__bar { flex-wrap: wrap; height: auto; }
+  }
+  @media (max-width: 22rem) {
+    .site-header__menu-label { display: none; }
+  }
+</style>

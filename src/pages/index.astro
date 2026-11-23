@@ -1,0 +1,53 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import Clinics from "../components/Clinics.astro";
+import Services from "../components/Services.astro";
+import Visit from "../components/Visit.astro";
+import Doctors from "../components/Doctors.astro";
+import Contacts from "../components/Contacts.astro";
+import Footer from "../components/Footer.astro";
+import { cities, socials, telegram } from "../data/site";
+import logo from "../assets/logo-mdent.svg";
+
+// JSON-LD (concept 8.3, S-SEO-R04): Organization + Dentist for each working clinic. Oleksandriia is left out until it opens.
+const working = cities.flatMap((g) => g.clinics).filter((c) => !c.soon);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "#org",
+      name: "MDENT",
+      alternateName: "Мережа стоматологічних клінік MDENT",
+      logo: logo.src,
+      sameAs: [telegram, ...socials.map((s) => s.href)],
+    },
+    { "@type": "WebSite", name: "Стоматологія MDENT", inLanguage: "uk" },
+    ...working.map((c) => ({
+      "@type": "Dentist",
+      name: c.note ? `MDENT ${c.name} (${c.note}), ${c.city}` : c.name.startsWith("MDENT") ? c.name : `MDENT ${c.city}, ${c.name.toLowerCase()}`,
+      parentOrganization: { "@id": "#org" },
+      address: { "@type": "PostalAddress", streetAddress: c.address, addressLocality: c.city, addressCountry: "UA" },
+      telephone: c.phones.map((p) => p.tel),
+      ...(c.hoursSchema ? { openingHours: c.hoursSchema } : {}),
+    })),
+  ],
+};
+---
+<Base
+  lang="uk"
+  title="Стоматологія MDENT — Дніпро, Кам'янське, Ужгород | для всієї родини"
+  description="Мережа стоматологій MDENT: п'ять клінік і дитяча ортодонтія Orto Kids у Дніпрі, Кам'янському та Ужгороді. План лікування, оплата частинами. Оберіть клініку."
+>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <Header slot="header" />
+  <Hero />
+  <Clinics />
+  <Services />
+  <Visit />
+  <Doctors />
+  <Contacts />
+  <Footer slot="footer" />
+</Base>

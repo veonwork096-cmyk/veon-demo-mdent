@@ -1,0 +1,44 @@
+---
+import Section from "./Section.astro";
+import FutureLink from "./FutureLink.astro";
+---
+<Section id="visit" rec="R-007" class="visit">
+  <div class="container">
+    <h2 class="visit__title">Перший візит: консультація і оплата частинами</h2>
+    <div class="visit__cols">
+      <div class="visit__col">
+        <h3 class="visit__head visit__head--lead">Консультація і план лікування безкоштовно</h3>
+        <p class="visit__text">Крім консультації ортодонта та дитячого стоматолога.</p>
+      </div>
+      <div class="visit__col">
+        <h3 class="visit__head">Оплата частинами і розстрочка ПриватБанку</h3>
+        <p class="visit__text">Можна оплатити карткою. Умови розстрочки уточнюйте в адміністратора своєї клініки.</p>
+      </div>
+    </div>
+    <div class="visit__actions">
+      <a class="btn btn--outline" href="#clinics">Обрати клініку</a>
+      <FutureLink note="Розділ у розробці" class="visit__prices">Ціни</FutureLink>
+    </div>
+  </div>
+</Section>
+
+<style>
+  :global(#visit) { background: var(--color-paper-2); padding-block: var(--section-gap); }
+  .visit__title { max-width: 20ch; margin-bottom: var(--gap-2xl); }
+  .visit__cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-columns); }
+  .visit__col { display: grid; gap: var(--gap-md); align-content: start; padding-top: var(--gap-lg); border-top: 2px solid var(--color-field); }
+  .visit__col + .visit__col { padding-left: 0; }
+  .visit__head { font-size: var(--text-title); max-width: 18ch; }
+  .visit__head--lead { font-size: var(--text-section); line-height: 1.1; color: var(--color-field); }
+  .visit__text { font-size: var(--text-lead); line-height: 1.45; max-width: 34ch; }
+  .visit__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap-sm) var(--gap-xl); margin-top: var(--gap-2xl); }
+  .visit__actions :global(.visit__prices) { min-height: 44px; font-weight: 600; }
+
+  @media (max-width: 47.99rem) {
+    .visit__title { margin-bottom: var(--gap-xl); }
+    .visit__cols { grid-template-columns: minmax(0, 1fr); gap: var(--gap-xl); }
+    .visit__text { font-size: var(--text-md); }
+    .visit__actions { margin-top: var(--gap-xl); }
+    .visit__actions .btn { width: 100%; min-height: 56px; }
+  }
+</style>

@@ -1,0 +1,112 @@
+---
+import { Image } from "astro:assets";
+import Section from "./Section.astro";
+import FutureLink from "./FutureLink.astro";
+import { cities, mapUrl } from "../data/site";
+
+const count = (n: number) => (n === 1 ? "1 клініка" : `${n} адреси`);
+---
+<Section id="clinics" rec="R-002,R-010,S-SEO-R04,S-SEO-R09" class="clinics">
+  <div class="container">
+    <div class="clinics__head">
+      <h2>Клініки: шість адрес у чотирьох містах</h2>
+      <p class="lead muted">Оберіть свою клініку і телефонуйте їй напряму: у кожної свій номер.</p>
+    </div>
+
+    <ol class="index">
+      {cities.map((g, gi) => (
+        <li class:list={["index__city", { "index__city--soon": g.key === "oleksandriia" }]} data-reveal style={`--i:${gi}`}>
+          <div class="index__label">
+            <h3 class="index__name">{g.city}</h3>
+            {g.key !== "oleksandriia" && <p class="index__count muted">{count(g.clinics.length)}</p>}
+          </div>
+          <ul class="index__list">
+            {g.clinics.map((c) => (
+              <li class="clinic" id={c.id}>
+                {c.photo ? (
+                  <Image class="clinic__photo" src={c.photo} alt={c.alt ?? ""} widths={[240, 480]} sizes="(min-width: 48rem) 240px, 112px" loading="lazy" decoding="async" />
+                ) : (
+                  <div class="clinic__photo clinic__photo--empty" aria-hidden="true"></div>
+                )}
+                <div class="clinic__body">
+                  <h4 class="clinic__name">
+                    {c.name}{c.note && <span class="clinic__note">, {c.note}</span>}
+                  </h4>
+                  {c.soon ? (
+                    <p class="clinic__soon">{c.address}. Незабаром відкриття</p>
+                  ) : (
+                    <>
+                      <ul class="clinic__phones">
+                        {c.phones.map((p) => (
+                          <li><a class="phone" href={`tel:${p.tel}`} aria-label={`${p.label}, подзвонити: ${c.name}`}>{p.label}</a></li>
+                        ))}
+                      </ul>
+                      <p class="clinic__addr">{c.city}, {c.address}</p>
+                      {c.hours && <p class="clinic__hours muted">{c.hours}</p>}
+                      <p class="clinic__links">
+                        <a class="text-link" href={mapUrl(c)} target="_blank" rel="noopener">Маршрут на мапі</a>
+                        <FutureLink note="Розділ у розробці" class="clinic__more">Детальніше про клініку</FutureLink>
+                      </p>
+                    </>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </div>
+</Section>
+
+<style>
+  :global(#clinics) { padding-block: var(--gap-2xl) 0; }
+  .clinics__head { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--gap-columns); align-items: end; margin-bottom: var(--gap-2xl); }
+  .clinics__head .lead { font-weight: 400; font-size: var(--text-md); }
+
+  .index { display: grid; }
+  .index__city { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--gap-columns); padding-block: var(--gap-xl); border-top: 1px solid var(--color-rule); }
+  .index__city:last-child { border-bottom: 1px solid var(--color-rule); }
+  .index__label { align-self: start; position: sticky; top: calc(var(--header-h) + var(--gap-lg)); }
+  .index__name { font-size: var(--text-city); line-height: 1; letter-spacing: -0.03em; color: var(--color-field); }
+  .index__count { margin-top: var(--gap-xs); font-size: var(--text-sm); }
+
+  .index__list { display: grid; gap: var(--gap-xl); }
+  .clinic { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: var(--gap-lg); align-items: start; }
+  .clinic__photo { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius); background: var(--color-paper-2); box-shadow: var(--shadow-photo); }
+  .clinic__body { display: grid; gap: var(--gap-xs); min-width: 0; }
+  .clinic__name { font-family: var(--font-body); font-weight: 600; font-size: var(--text-lead); letter-spacing: 0; line-height: 1.3; }
+  .clinic__note { font-weight: 400; color: var(--color-muted); }
+  .clinic__phones { display: flex; flex-wrap: wrap; gap: 0 var(--gap-lg); }
+  .phone { display: inline-flex; align-items: center; min-height: 48px; font: 600 var(--text-title)/1.1 var(--font-body); font-variant-numeric: tabular-nums; color: var(--color-field); text-decoration: underline; text-decoration-thickness: 2px; text-decoration-color: var(--color-rule); text-underline-offset: 0.2em; white-space: nowrap; transition: text-decoration-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
+  .phone:hover { text-decoration-color: var(--color-accent); }
+  .phone:active { transform: translateY(1px); }
+  .clinic__links { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--gap-lg); }
+  .clinic__links :global(.future-link) { min-height: 44px; color: var(--color-muted); }
+
+  .index__city--soon .index__name { color: var(--color-muted); }
+  .index__city--soon .clinic { grid-template-columns: minmax(0, 1fr); }
+  .clinic__photo--empty { display: none; }
+  .clinic__soon { color: var(--color-muted); }
+
+  @media (max-width: 63.99rem) {
+    .clinics__head { grid-template-columns: minmax(0, 1fr); gap: var(--gap-md); margin-bottom: var(--gap-xl); }
+    .index__city { grid-template-columns: minmax(0, 1fr); gap: var(--gap-md); padding-block: var(--gap-lg) var(--gap-xl); }
+    .index__label { top: var(--header-h); z-index: var(--z-sticky); background: var(--color-bg); padding-block: var(--gap-xs); margin-block: calc(-1 * var(--gap-xs)); display: flex; align-items: baseline; gap: var(--gap-md); }
+    .index__count { margin: 0; }
+  }
+  @media (max-width: 47.99rem) {
+    .clinic { grid-template-columns: 112px minmax(0, 1fr); gap: var(--gap-xs) var(--gap-md); align-items: center; }
+    .clinic__body { display: contents; }
+    .clinic__photo { grid-column: 1; grid-row: 1; }
+    .clinic__name { grid-column: 2; grid-row: 1; }
+    .clinic__body > :not(.clinic__name) { grid-column: 1 / -1; }
+    .clinic__phones { flex-direction: column; margin-top: var(--gap-xs); }
+    .phone { width: 100%; justify-content: space-between; padding-inline: var(--gap-md); border: 1.5px solid var(--color-field); border-radius: var(--radius-btn); text-decoration: none; min-height: 52px; }
+    .phone:hover { background: var(--color-paper-2); }
+    .clinic__phones { gap: var(--gap-xs); }
+    .phone { font-size: var(--text-lead); }
+    .index__city--soon .clinic { grid-template-columns: minmax(0, 1fr); }
+    .index__city--soon .clinic__name, .index__city--soon .clinic__body > * { grid-column: 1; grid-row: auto; }
+  }
+</style>
